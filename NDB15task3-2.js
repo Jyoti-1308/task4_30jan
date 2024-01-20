@@ -4,7 +4,7 @@ let fs = require("fs");
 let axios = require("axios");
 app.use(express.json());
 app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+    res.header("Access-Control-Allow-Origin", "*");
     res.header(
         "Access-Control-Allow-Headers",
         "Origin, X-Requested-With, Content-Type, Accept,authorization"
@@ -14,7 +14,7 @@ app.use(function (req, res, next) {
 });
 
 
-const port = process.env.PORT || 2410;
+var port = process.env.PORT || 2410;
 
 app.listen(port, () => console.log(`Node App listening on port ${port}!`));
 
@@ -27,31 +27,33 @@ app.post("/myServer", function (req, res) {
         // let data2=JSON.parse(body.data1);
         axios.post(body.fetchURL, body.data)
             .then(function (response) {
-                res.send(response);
+                res.send(response.data);
             })
             .catch(function (err) {
-                // if(err.response)
-                // console.log(err.response);
-                let { status, statusText } = err.response;
-                console.log(status, statusText);
-                let json = { err_code: status, err_message: statusText };
-                console.log(json);
-                res.status(401).send(json);
-
+                if (err.response) {
+                    // console.log(err.response);
+                    let { status, statusText } = err.response;
+                    console.log(status, statusText);
+                    let json = { err_code: status, err_message: statusText };
+                    console.log(json);
+                    res.status(401).send(json);
+                }
             });
     }
     if (body.method === "GET") {
         axios.get(body.fetchURL)
             .then(function (response) {
-                console.log(response.data);
-                res.send(response);
+                console.log(response);
+                res.send(response.data);
             })
             .catch(function (err) {
-                let { status, statusText } = err.response;
-                console.log(status, statusText);
-                let json = { err_code: status, err_message: statusText };
-                console.log(json);
-                res.status(401).send(json);
+                if (err.response) {
+                    let { status, statusText } = err.response;
+                    console.log(status, statusText);
+                    let json = { err_code: status, err_message: statusText };
+                    console.log(json);
+                    res.status(401).send(json);
+                }
             });
     }
 
