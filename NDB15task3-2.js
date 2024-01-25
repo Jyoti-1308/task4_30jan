@@ -15,7 +15,7 @@ app.use(function (req, res, next) {
 
 
 const port = 2410;
-let baseUrl = "https://repo-8qu2.onrender.com/studentServer/";
+let baseUrl = "https://repo-8qu2.onrender.com/studentServer";
 app.listen(port, () => console.log(`Node App listening on port ${port}!`));
 
 
@@ -43,42 +43,62 @@ app.post("/myServer", function (req, res) {
             });
     }
     if (body.method === "GET") {
-        if (body.fetchURL === (baseUrl + "/getToken")) {
-            console.log("inside base url get token");
-            axios.get(body.fetchURL)
+        if (body.fetchURL === (baseUrl + "/students")) {
+            console.log(body.key1);
+            let value = body.key1 && (body.key1.toLowerCase() === "authorization") ? body.value1 : "";
+
+            axios.get(body.fetchURL, { headers: { authorization: value } })
                 .then(function (response) {
-                    
                     console.log(response);
-                    res.send("" + response.data);
+                    res.send(response);
                 })
                 .catch(function (err) {
                     if (err.response) {
                         let { status, statusText } = err.response;
-                        // console.log(status, statusText);
-                        res.status(status).send(statusText);
-                    }
-                    else {
-                        res.status(401).send(err);
+                        console.log(status, statusText);
+                        let json = { err_code: status, err_message: statusText };
+                        console.log(json);
+                        res.status(401).send(json);
                     }
                 });
         }
+        else 
+        if (body.fetchURL === (baseUrl + "/getToken")) {
+            console.log("inside base url get token");
+            axios.get(body.fetchURL)
+                .then(function (response) {
 
-        axios.get(body.fetchURL)
-            .then(function (response) {
-                // console.log("inside get url axios");
-                // console.log(response.data);
-                res.send(response);
+                    console.log(response);
+                    res.send(response);
+                })
+                .catch(function (err) {
+                    if (err.response) {
+                        let { status, statusText } = err.response;
+                        console.log(status, statusText);
+                        let json = { err_code: status, err_message: statusText };
+                        console.log(json);
+                        res.status(401).send(json);
+                    }
+                });
+        }
+        else {
+            axios.get(body.fetchURL)
+                .then(function (response) {
+                    // console.log("inside get url axios");
+                    // console.log(response.data);
+                    res.send(response);
 
-            })
-            .catch(function (err) {
-                if (err.response) {
-                    let { status, statusText } = err.response;
-                    console.log(status, statusText);
-                    let json = { err_code: status, err_message: statusText };
-                    console.log(json);
-                    res.status(401).send(json);
-                }
-            });
+                })
+                .catch(function (err) {
+                    if (err.response) {
+                        let { status, statusText } = err.response;
+                        console.log(status, statusText);
+                        let json = { err_code: status, err_message: statusText };
+                        console.log(json);
+                        res.status(401).send(json);
+                    }
+                });
+        }
     }
 
 })
