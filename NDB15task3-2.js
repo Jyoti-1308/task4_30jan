@@ -70,6 +70,7 @@ app.post("/myServer", function (req, res) {
                 });
         }
     }
+    //get request
     if (body.method === "GET") {
         if (body.fetchURL === (baseUrl + "/students")) {
             console.log(body.header);
